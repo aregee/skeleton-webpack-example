@@ -4,27 +4,46 @@ export const healthAppProvider = function () {
   this.$get = function (container) {
 
     const singleSpaMithril = container.singleSpaMithril;
-
-    function domElementGetter() {
+    const $window = container.$window;
+    const healthView = container.healthapp;
+    const app = container.skeletondemo.app;
+    function domElementGetter(getLocationParams, healthview) {
       // Make sure there is a div for us to render into
       let el = document.getElementById('conduit');
       if (!el) {
-        el = document.createElement('div');
-        el.id = 'conduit';
-        document.body.appendChild(el);
+        // we mounth HealthView Component
+        el = healthview({
+          viewContainer: '.view-container',
+          routeParams: getLocationParams()
+        }).componentDidMount();
       }
-
       return el;
     }
     return (prop) => prop.then(({routes, domain}) => {
-      console.log(domain);
+
+      /**
+       * Returns the location params from url
+       * @returns {object}
+       */
+      const component = healthView('health', 'health', app);
+      function getLocationParams() {
+        let out = {};
+
+        // Parse the location object
+        location.search.substr(1).split('&').forEach(parts => {
+          let values = parts.split('=');
+          out[values[0]] = values[1];
+        });
+
+        return out;
+      }
       const mithrilLifeCyles = singleSpaMithril({
         Mithril: m,
         routes: routes,
         base: '/',
         prefix: '/health',
         stateInit: domain.init,
-        domElementGetter: domElementGetter
+        domElementGetter: domElementGetter.bind(null, getLocationParams, component)
       });
 
       function bootstrap(props) {
@@ -58,14 +77,6 @@ export const HealthAppView =function (container) {
   const mix = container.mix;
   const GenericView = container.GenericView;
   const View = container.View;
-  const singleSpa =  container.singleSpa;
-  const mithrilapp =  container.declareHealthApp;
-
-  function hashPrefix(prefix) {
-    return function (location) {
-      return location.pathname.startsWith(`${prefix}`);
-    }
-  }
 
   class HealthApp extends mix(View).with(GenericView) {
     constructor(
@@ -77,7 +88,6 @@ export const HealthAppView =function (container) {
     ) {
       super(viewClassName, urlName, routeParams, dom, app);
       this.panels = [];
-      singleSpa.declareChildApplication(viewClassName, () => mithrilapp(import('../../ui/src/index.js')), hashPrefix('/health'));
     }
     loadData() {
       super.loadData();
@@ -136,6 +146,17 @@ export const healthapp = function () {
 export const mdrun = function (app) {
   let router = app.appRouter;
   let healthview = app.core.container.healthapp;
+  const singleSpa =  app.core.container.singleSpa;
+  const mithrilapp =  app.core.container.declareHealthApp;
+
+  function hashPrefix(prefix) {
+    return function (location) {
+      return location.pathname.startsWith(`${prefix}`);
+    }
+  }
+
+  singleSpa.declareChildApplication('health', () => mithrilapp(import('../../ui/src/index.js')), hashPrefix('/health'));
+
   router.addRoute({
     component: healthview('health', 'health', app),
     pattern: ['/health/.+', '/health']

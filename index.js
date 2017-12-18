@@ -13,3 +13,4 @@ import('./packages')
     console.log(app);
   });
 });
+  

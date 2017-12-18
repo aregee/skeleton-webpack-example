@@ -19,6 +19,7 @@ export const router = function () {
 
     function _cleanContainer(params) {
       if (singleSpa.getMountedApps().indexOf(params.viewClassName) > -1) {
+        console.log("unlload app ", params.viewClassName);
         singleSpa.unloadChildApplication(params.viewClassName);
       }
       if (currentView && currentView.parentElement) {
@@ -70,7 +71,7 @@ export const router = function () {
           hooks.beforeMount(route, currentRoute);
           mountRouteElement(route, getLocationParams());
           // hooks.afterMount(()=>);
-          // singleSpa.navigateToUrl(currentRoute);
+          singleSpa.navigateToUrl(currentRoute);
         })
         .catch((e) => {
           mountRouteElement(shell.notfound('404', '404'), getLocationParams())
@@ -100,9 +101,7 @@ export const router = function () {
     }
     $window.onpopstate = function (event) {
       console.log(event.target.location);
-      // console.log();
-      loadRoute(event.target.location);
-      // $window.handlePushState();
+      $window.handlePushState(event.target.location);
     };
 
     const initialize = (routesDefinition, containerElement, hooksDefinition) => {

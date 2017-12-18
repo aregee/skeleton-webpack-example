@@ -8,9 +8,10 @@ export const mithrilAppProvider = function () {
       // Make sure there is a div for us to render into
       let el = document.getElementById('editor');
       if (!el) {
-        el = document.createElement('div');
-        el.id = 'editor';
-        document.body.appendChild(el);
+        // el = document.createElement('div');
+        // el.id = 'editor';
+        // document.body.appendChild(el);
+        throw new Error('Cant Mount app on element editor');
       }
 
       return el;

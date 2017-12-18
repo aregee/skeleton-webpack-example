@@ -4,9 +4,9 @@ import('./helpers.js')
     skeletonEngine
   }) => {
     const skeletondemo = skeletonEngine.shell('skeletondemo');
-    skeletondemo.provider('declareHealthApp', healthAppProvider);
     skeletondemo.factory('HealthApp', HealthAppView);
     skeletondemo.provider('healthapp', healthapp);
+    skeletondemo.provider('declareHealthApp', healthAppProvider);
     skeletondemo.run(mdrun);
   });
 });

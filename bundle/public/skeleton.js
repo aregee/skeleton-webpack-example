@@ -1,0 +1,1 @@
+webpackJsonp([1],{123:function(t,e,n){"use strict";var o=n(58);n.e(0).then(n.bind(null,230)).then(function(t){t.default(),o.skeletonEngine.bootstrap("skeletondemo",{api:"http://localhost:3000",elements:["ul","li","section","tr","td","table","tbody","thead","body","script","style","img","form","input"]}).shell("skeletondemo").run(function(t){console.log(t)})})}},[123]);

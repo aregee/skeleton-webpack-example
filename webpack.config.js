@@ -10,7 +10,6 @@ const entry = {
   skeleton: __dirname + '/index.js',
   // editor: './modules/editor.js',
   'common-dependencies': [
-    'skeletonpwa',
     'mithril',
     // 'skeletonpwa',
     /* Just one version of react, too. react-router is fine to have multiple versions of,
@@ -90,11 +89,8 @@ const plugins = [
 
 
 const devServer = {
-  contentBase: path.join(__dirname, "bundle"),
   compress: true,
-  historyApiFallback: {
-    index: 'index.html'
-  },
+  historyApiFallback: true,
   stats: 'minimal',
   disableHostCheck: true
 };

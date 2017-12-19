@@ -147,14 +147,12 @@ const actions = {
     socket.on('new message', function (data) {
       try {
         if (data) {
-          console.log(data);
-          console.log('?>>>regres\hings>>>');
           state.selectedConversation.data.push(data);
         }
       } catch (e) {
         alert('There is a problem:', e);
       } finally {
-        m.redraw()
+        m.redraw();
       }
     });
   },
@@ -174,23 +172,23 @@ const actions = {
       });
   },
   healthLogs: function (gridConfig) {
-    return api.get('/v2/es/list', gridConfig)
-      .then(data => {
-        state.selectedGridView.rowData = data.data;
-        //gridConfig.rowData.concat(data);
-        state.selectedGridView.columnDefs = data.schema;
-        return data;
-      });
+    // return api.get('/v2/es/list', gridConfig)
+    //   .then(data => {
+    //     state.selectedGridView.rowData = data.data;
+    //     //gridConfig.rowData.concat(data);
+    //     state.selectedGridView.columnDefs = data.schema;
+    //     return data;
+    //   });
   },
   searchLogs: function (gridConfig) {
-    return api.get('/v2/es/search', gridConfig)
-      .then(data => {
-        state.selectedGridView.rowData = data.data;
-        //gridConfig.rowData.concat(data);
-        state.selectedGridView.columnDefs = data.schema;
-        m.redraw();
-        return data;
-      });
+    // return api.get('/v2/es/search', gridConfig)
+    //   .then(data => {
+    //     state.selectedGridView.rowData = data.data;
+    //     //gridConfig.rowData.concat(data);
+    //     state.selectedGridView.columnDefs = data.schema;
+    //     m.redraw();
+    //     return data;
+    //   });
   },
   setCurrentlyActiveView: function (payload) {
     var request = {};

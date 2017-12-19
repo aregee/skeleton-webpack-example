@@ -1,4 +1,3 @@
-import m from 'mithril';
 export const healthAppProvider = function () {
 
   this.$get = function (container) {
@@ -13,13 +12,19 @@ export const healthAppProvider = function () {
       if (!el) {
         // we mounth HealthView Component
         el = healthview({
-          viewContainer: '.view-container',
+          viewContainer: app.utils.viewContainer,
           routeParams: getLocationParams()
         }).componentDidMount();
       }
       return el;
     }
+
     return (prop) => prop.then(({routes, domain}) => {
+      return import('mithril').then((mithril) => {
+        return {routes, domain, mithril};
+      });
+    })
+    .then(({routes, domain, mithril}) => {
 
       /**
        * Returns the location params from url
@@ -38,7 +43,7 @@ export const healthAppProvider = function () {
         return out;
       }
       const mithrilLifeCyles = singleSpaMithril({
-        Mithril: m,
+        Mithril: mithril,
         routes: routes,
         base: '/',
         prefix: '/health',
@@ -155,7 +160,7 @@ export const mdrun = function (app) {
     }
   }
 
-  singleSpa.declareChildApplication('health', () => mithrilapp(import('../../ui/src/index.js')), hashPrefix('/health'));
+  singleSpa.declareChildApplication('health', () => mithrilapp(import('./src/index.js')), hashPrefix('/health'));
 
   router.addRoute({
     component: healthview('health', 'health', app),

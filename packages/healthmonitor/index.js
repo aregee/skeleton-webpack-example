@@ -1,4 +1,4 @@
-import('./helpers.js')
+import('./../../ui/helpers.js')
 .then(({healthAppProvider, HealthAppView, healthapp, mdrun }) => {
   import('skeletonpwa').then(({
     skeletonEngine

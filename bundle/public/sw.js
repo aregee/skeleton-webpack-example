@@ -1,4 +1,4 @@
-const CACHE_NAME = '9rq089j3';
+const CACHE_NAME = 'tim0srl3';
 
 const CRITICAL = [
   '/',

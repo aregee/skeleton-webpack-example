@@ -5,7 +5,7 @@ import {
 const skeletondemo = skeletonEngine.shell('skeletondemo');
 
 
-import('./reactapp')
+import('./../../app1/reactapp')
 .then(({
   reactAppProvider,
   ReactAppView,

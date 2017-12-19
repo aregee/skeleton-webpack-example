@@ -96,8 +96,15 @@ export const router = function () {
     $window.handlePushState = (p) => {
       // Push the state
       console.log(p);
-      $window.history.pushState(null, null, p);
-      loadRoute();
+      try {
+        $window.history.pushState(null, null, p);
+      } catch (e) {
+        throw new Error(e);
+      } finally {
+        loadRoute();
+      }
+      // $window.history.pushState(null, null, p);
+
     }
     $window.onpopstate = function (event) {
       console.log(event.target.location);

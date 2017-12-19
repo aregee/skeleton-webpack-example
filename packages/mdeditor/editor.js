@@ -1,26 +1,41 @@
-import m from 'mithril';
-export const mithrilAppProvider = function () {
+export const mithrilAppProvider = function() {
 
-  this.$get = function (container) {
+  this.$get = function(container) {
     const singleSpaMithril = container.singleSpaMithril;
+    const editorView = container.mdeditor;
+    const app = container.skeletondemo.app;
 
-    function domElementGetter() {
+    function domElementGetter(locationParams, spacomponent) {
       // Make sure there is a div for us to render into
       let el = document.getElementById('editor');
       if (!el) {
-        // el = document.createElement('div');
-        // el.id = 'editor';
-        // document.body.appendChild(el);
-        throw new Error('Cant Mount app on element editor');
+        el = spacomponent({
+          viewContainer: app.utils.viewContainer,
+          routeParams: locationParams()
+        }).componentDidMount();
       }
-
       return el;
     }
-    return (prop) => prop.then((Root) => {
+
+    function getLocationParams() {
+      let out = {};
+
+      // Parse the location object
+      location.search.substr(1).split('&').forEach(parts => {
+        let values = parts.split('=');
+        out[values[0]] = values[1];
+      });
+
+      return out;
+    }
+    return (prop) => prop.then((resolved) => {
+      const component = editorView('editor-view', 'core', app);
+      let Root = resolved[1];
+      let mithril = resolved[0];
       const mithrilLifeCyles = singleSpaMithril({
-        Mithril: m,
+        Mithril: mithril,
         rootComponent: Root.default,
-        domElementGetter: domElementGetter
+        domElementGetter: domElementGetter.bind(null, getLocationParams, component)
       });
 
       function bootstrap(props) {
@@ -35,32 +50,25 @@ export const mithrilAppProvider = function () {
         return mithrilLifeCyles.unmount(props);
       }
 
-      let lcyle =  {
+      let lcyle = {
         bootstrap,
         mount,
         unmount
       };
 
-      return new Promise(function (resolve, reject) {
-          resolve(lcyle);
+      return new Promise(function(resolve, reject) {
+        resolve(lcyle);
       });
     });
 
   };
 
 };
-export const MithrilEditorView = function (container) {
+
+export const MithrilEditorView = function(container) {
   const mix = container.mix;
   const GenericView = container.GenericView;
   const View = container.View;
-  const singleSpa =  container.singleSpa;
-  const mithrilapp =  container.mithrilapp;
-
-  function hashPrefix(prefix) {
-    return function (location) {
-      return location.pathname.startsWith(`${prefix}`);
-    }
-  }
 
   class MithrilEditor extends mix(View).with(GenericView) {
     constructor(
@@ -72,7 +80,6 @@ export const MithrilEditorView = function (container) {
     ) {
       super(viewClassName, urlName, routeParams, dom, app);
       this.panels = [];
-      singleSpa.declareChildApplication(viewClassName, () => mithrilapp(import('../modules/editor.js')), hashPrefix('/editor'));
     }
     loadData() {
       // super.loadData();
@@ -85,7 +92,7 @@ export const MithrilEditorView = function (container) {
           id: 'example'
         });
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
           resolve({
             panel: mithPanel
           });
@@ -144,8 +151,8 @@ export const MithrilEditorView = function (container) {
 
 };
 
-export const mdeditorprovider = function () {
-  this.$get = function (container) {
+export const mdeditorprovider = function() {
+  this.$get = function(container) {
     const MithrilEditor = container.MithrilEditor;
     const app = container.skeletondemo.app;
     const router = container.state;
@@ -165,9 +172,23 @@ export const mdeditorprovider = function () {
   }
 };
 
-export const mdrun = function (app) {
+export const mdrun = function(app) {
   let editorView = app.core.container.mdeditor;
   let router = app.appRouter;
+  const singleSpa = app.core.container.singleSpa;
+  const mithrilapp = app.core.container.mithrilapp;
+
+  function hashPrefix(prefix) {
+    return function(location) {
+      return location.pathname.startsWith(`${prefix}`);
+    }
+  }
+  let mithril = () =>
+    import ('mithril');
+  let appEntry = () =>
+    import ('./../../modules/editor.js');
+
+  singleSpa.declareChildApplication('editor-view', () => mithrilapp(Promise.all([mithril(), appEntry()])), hashPrefix('/editor'));
 
   router.addRoute({
     component: editorView('editor-view', 'core', app),
